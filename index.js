@@ -50,7 +50,7 @@ const evaluateGame = async (grid) => {
             }
 
             // Check the grid for straight or diagonal lines of the same name
-            let rowMatch = 0;
+            let rowMatches = 0;
             let rowMatch = false, columnMatch = false, diagonalMatch = false;
             let winner;
 
@@ -64,17 +64,18 @@ const evaluateGame = async (grid) => {
                     }  
 
                     if(grid[g][i] === grid[g][j]) {
-                        rowMatch++;
-                        if(rowMatch === 2) {
-                            winner = grid[g][i];
-                            rowMatch = true;
-                            break;
-                        }
+                        rowMatches++;
                     }
 
                 } 
 
-                 // Column Check
+                if(rowMatches === 2) {
+                    winner = grid[g][0];
+                    rowMatch = true;
+                    break;
+                }
+
+                // Column Check
                 if(grid[0][g] === grid[1][g] === grid[2][g]) {
                     columnMatch = true;
                     winner = grid[0][g];
@@ -93,16 +94,12 @@ const evaluateGame = async (grid) => {
             }
 
             // Check of matches and determine game status
-            if(rowMatch === 2 || columnMatch || diagonalMatch) {
+            if(rowMatch || columnMatch || diagonalMatch) {
                 // Game is over
                 result.gameOver = true;
                 result.status = 'WIN';
                 result.winner = winner;
             }
-
-            console.log(result);
-
-            // resolve(result);
         
             setTimeout(()=>{
                 resolve(result);
@@ -141,17 +138,16 @@ gameLoop = async ()=> {
         // Prompt first player
         propmtPlayer(nextPlayer.name);
        
-        console.log('GRID', nextGrid);
         // Prompt for response and Mark on the grid
         nextGrid = markElement(nextGrid, nextPlayer, player1coordinates);
         result = await evaluateGame(nextGrid);
 
-        console.log('result', result);
 
         if(result.gameOver === true) {
             gameOver = true;
+            printGrid(nextGrid);
             console.log('*******************************');
-            console.log(`WHOOO, Player ${result.winner.name} ${result.status}`);
+            console.log(`WHOOO, Player ${result.winner} ${result.status}`);
             console.log('*******************************')
             return;
         } 
